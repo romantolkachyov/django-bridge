@@ -1,0 +1,53 @@
+{
+  "name": "django-bridge",
+  "version": "0.1.0",
+  "description": "Integrates nodejs into python/django framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/romantolkachyov/django-bridge.git"
+  },
+  "keywords": [
+    "django",
+    "python",
+    "bridge",
+    "coffeescript",
+    "browserify",
+    "scss",
+    "gulp"
+  ],
+  "author": "Roman Tolkachyov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/romantolkachyov/django-bridge/issues"
+  },
+  "homepage": "https://github.com/romantolkachyov/django-bridge",
+  "dependencies": {
+    "browserify": "^9.0.8",
+    "browserify-eco": "^0.2.4",
+    "coffeeify": "^1.0.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^1.3.3",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-util": "^3.0.4",
+    "gulp-watch": "^4.2.4",
+    "gulp-watchify": "^0.5.0",
+    "shelljs": "^0.4.0",
+    "underscore": "^1.8.3",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.1.1"
+  },
+  "browserify": {
+    "transform": [
+      "coffeeify",
+      "browserify-eco",
+      "browserify-shim",
+      "aliasify"
+    ]
+  }
+}

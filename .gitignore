@@ -55,3 +55,6 @@ docs/_build/
 
 # PyBuilder
 target/
+node_modules
+example-project/static
+db.sqlite3
