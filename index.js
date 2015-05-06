@@ -104,16 +104,12 @@ gulp.task('styles', function() {
         })
     }
 
+    s = gulp.src(file_list)
     if (watching) {
-        return gulp.src(file_list)
-                   .pipe(watch(file_list))
-                   .pipe(sass(sass_options))
-                   .pipe(gulp.dest('./static'));
-    } else {
-        return gulp.src(file_list)
-                   .pipe(sass(sass_options))
-                   .pipe(gulp.dest('./static'));
+        s = s.pipe(watch(file_list));
     }
+    return s.pipe(sass(sass_options))
+            .pipe(gulp.dest('./static/styles/'));
 })
 
 gulp.task('scripts', watchify(function(watchify) {
