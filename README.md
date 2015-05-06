@@ -20,7 +20,8 @@ that you using python virtualenv.
 
 After that you must add `django-bridge` into `INSTALLED_APPS` list in django
 settings. After that you may use command `bridge install` to install node and
-related packages into your python virtualenv using `nodeenv`.
+related packages into your python virtualenv using `nodeenv`. It will not work
+outside virtualenv because perfoms global gulp install
 
     python manage.py bridge install
 

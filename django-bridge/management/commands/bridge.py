@@ -30,6 +30,8 @@ class Command(BaseCommand):
                 raise CommandError("Not in production enviroment. "
                                    "Set DEBUG=True")
         elif action == 'init':
+            subprocess.call(['pip', 'install', 'nodeenv'])
+            subprocess.call(['nodeenv', '-p', '--prebuilt', '-n', '0.11.16'])
             subprocess.call(['npm', 'init'])
         else:
             # unrecognized command
