@@ -76,7 +76,7 @@ Roadmap
 
 * JSX
 * less
-* open file at pos on notification click
+* open file at pos on notification click (seems like imposible)
 * sprites
 
 0.1

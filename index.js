@@ -21,10 +21,36 @@ var bust = require('gulp-buster');
 
 var notify = require('gulp-notify');
 
+var plumber = require('gulp-plumber');
 
-handle_error = notify.onError({
-    message: 'Error: <%= error.message %>'
-});
+var handle_error = notify.onError(function (error) {
+    notify.on('click', function (notifierObject, options) {
+        // Happens if `wait: true` and user clicks notification
+        if (notifierObject.open_exec) {
+            console.log("Out:", shelljs.exec(notifierObject.open_exec));
+        }
+    });
+
+    notify_path = path.dirname(require.resolve('gulp-notify'))
+
+    options = {
+        message: error.message,
+        title: "Error",
+        icon: path.join(notify_path, 'assets', 'gulp-error.png'),
+        sound: 'Frog',
+        wait: true
+    }
+
+    if (error.file) {
+        parsed_path = path.parse(error.file);
+        filename = parsed_path.base;
+        options['title'] = filename + ':' + error.line + ':' + error.column;
+        // TODO: configuration
+        options['open_exec'] = 'subl ' + error.file + ':' + error.line + ':' + error.column;
+    }
+
+    return options
+})
 
 function get_django_apps() {
     // TODO: manage.py path configuration, for ex. src/manage.py
@@ -85,23 +111,10 @@ gulp.task('styles', function() {
     var file_list = find_styles();
 
     var scss_path = find_paths('styles');
+
     var sass_options = {
         includePaths: scss_path,
-        onError: notify.onError(function (error) {
-            // error.message
-            // error.file
-            // error.line
-            // error.column
-            notify_path = path.dirname(require.resolve('gulp-notify'))
-            parsed_path = path.parse(error.file)
-            filename = parsed_path.base
-            return {
-                message: error.message,
-                title: filename + ':' + error.line + ':' + error.column,
-                icon: path.join(notify_path, 'assets', 'gulp-error.png'),
-                sound: 'Frog'
-            }
-        })
+        onError: handle_error
     }
 
     s = gulp.src(file_list)
@@ -131,6 +144,7 @@ gulp.task('scripts', watchify(function(watchify) {
         }
     })
     return gulp.src(find_scripts())
+               .pipe(plumber())
                .pipe(w)
                .on('error', handle_error)
                .pipe(buffer())
