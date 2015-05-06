@@ -48,8 +48,8 @@ Usage
 After installing you can create endpoints for your scripts and styles in any
 django app in `static/scripts` and `static/styles` respectevly.
 
-Script files must have '.js', '.coffee' or '.jsx' extensions and styles
-are '.css', '.scss' or '.less'.
+Script files must have '.js' or '.coffee' extensions and styles
+are '.css' or '.scss'.
 
 You may import scripts and styles from any other installed django apps inside
 yours using django app name.
@@ -70,6 +70,14 @@ Available settings and their defaults listed below.
 
 Roadmap
 =======
+
+1.0
+---
+
+* JSX
+* less
+* open file at pos on notification click
+* sprites
 
 0.1
 ---

@@ -27,6 +27,7 @@ handle_error = notify.onError({
 });
 
 function get_django_apps() {
+    // TODO: manage.py path configuration, for ex. src/manage.py
     var res = shelljs.exec('./manage.py jsaliases', {silent:true}).output;
     return JSON.parse(res);
 }
@@ -87,13 +88,11 @@ gulp.task('styles', function() {
     var sass_options = {
         includePaths: scss_path,
         onError: notify.onError(function (error) {
-            error.message
-            error.file
-            error.line
-            error.column
-            console.log('SASS error happens', error);
+            // error.message
+            // error.file
+            // error.line
+            // error.column
             notify_path = path.dirname(require.resolve('gulp-notify'))
-            console.log('Module path:', notify_path)
             parsed_path = path.parse(error.file)
             filename = parsed_path.base
             return {
@@ -141,19 +140,20 @@ gulp.task('scripts', watchify(function(watchify) {
                .pipe(buffer())
                .pipe(sourcemaps.init({loadMaps:true}))
                .pipe(sourcemaps.write('./'))
-               .pipe(gulp.dest('./static/'))
+               .pipe(gulp.dest('./static/scripts/'))
                .pipe(bust({
                     transform: function(data) {
                         var result = {};
                         for(item in data) {
                             // TODO: may be config
                             filename = item.replace('static/', '')
+                            // TODO: may be filter .map files
                             result[filename] = data[item];
                         }
                         return result;
                     }
                }))
-               .pipe(gulp.dest('./static/'))
+               .pipe(gulp.dest('./static/scripts/'))
 }))
 
 gulp.task('watch', ['enable-watch-mode', 'scripts', 'styles']);
