@@ -58,3 +58,25 @@ After that you may reffer generated files using template tag in django:
     {% bridge "scripts/<endpoint>.coffee" %}
 
 It will be replaced with `gulp-buster` generated scripts.
+
+
+Configuration
+=============
+
+You can change package behaivor via `package.json` in your application.
+Available settings and their defaults listed below.
+
+
+Roadmap
+=======
+
+0.1
+---
+
+* gulp-notify
+* gulp-buster
+* vendors bundle
+* `manage.py bridge init` command
+* `bridge` template tag
+* configuration
+
