@@ -1,4 +1,16 @@
+/*
+django-bridge
+-------------
+
+This file is a part of django-bridge npm package which used with python
+module with same name.
+
+Defines gulp tasks for building scripts and styles bundles.
+
+Author: Roman Tolkachyov <roman@tolkachyov.name>
+*/
 var _ = require('underscore');
+var sprintf = require("sprintf-js").sprintf;
 
 var gulp = require('gulp');
 var browserify = require('browserify');
@@ -17,44 +29,103 @@ var fs = require('fs');
 var shelljs = require('shelljs');
 var path = require('path');
 
+var package = require(path.join(process.cwd(), 'package.json'));
+
 var bust = require('gulp-buster');
 
 var notify = require('gulp-notify');
 
 var plumber = require('gulp-plumber');
 
+var aliasify = require('aliasify');
+
+
+var browserify_error_re = /(\/.+\.js).+\((\d+)\:?(\d+)\)/i;
+var syntax_error_re = /(\/.+\.js)\:(\d+)/i;
+
+
+var exec_string = "subl %(file)s:%(line)d:%(column)";
+var STATIC_PATH = "./static"
+var DJANGO_PATH = "./"
+
+if (package.bridge) {
+    conf = package.bridge
+    if (conf.editor) {
+        exec_string = conf.editor;
+    }
+    if (conf.static_path) {
+        STATIC_PATH = conf.static_path;
+    }
+    if (conf.django_path) {
+        DJANGO_PATH = conf.django_path;
+    }
+}
+
 var handle_error = notify.onError(function (error) {
     notify.on('click', function (notifierObject, options) {
         // Happens if `wait: true` and user clicks notification
         if (notifierObject.open_exec) {
-            console.log("Out:", shelljs.exec(notifierObject.open_exec));
+            shelljs.exec(notifierObject.open_exec);
         }
     });
+
+    var filename = null;
 
     notify_path = path.dirname(require.resolve('gulp-notify'))
 
     options = {
         message: error.message,
-        title: "Error",
+        title: "Build Error",
         icon: path.join(notify_path, 'assets', 'gulp-error.png'),
         sound: 'Frog',
         wait: true
     }
 
     if (error.file) {
-        parsed_path = path.parse(error.file);
-        filename = parsed_path.base;
-        options['title'] = filename + ':' + error.line + ':' + error.column;
-        // TODO: configuration
-        options['open_exec'] = 'subl ' + error.file + ':' + error.line + ':' + error.column;
+        filename = error.file;
+        line = error.line;
+        column = error.column;
+    }
+
+    if (filename == null) {
+        res = browserify_error_re.exec(error.message)
+
+        if (res) {
+            filename = res[1];
+            line = res[2];
+            column = res[3];
+        }
+    }
+
+    if (filename == null) {
+        res = syntax_error_re.exec(error)
+        if (res) {
+            filename = res[1];
+            line = res[2];
+            column = 0;
+        }
+    }
+
+    if (filename != null) {
+        var parsed_path = path.parse(filename);
+        var parent_dir = path.parse(parsed_path.dir);
+        var short_filename = filename.split(path.sep).slice(-4).join(path.sep);
+        options['title'] = short_filename + ':' + line + ':' + column;
+        options['open_exec'] = sprintf(exec_string, {
+            file: filename,
+            line: line,
+            column: column
+        });
     }
 
     return options
 })
 
 function get_django_apps() {
-    // TODO: manage.py path configuration, for ex. src/manage.py
-    var res = shelljs.exec('./manage.py jsaliases', {silent:true}).output;
+    var command = path.join(DJANGO_PATH, 'manage.py');
+    var res = shelljs.exec('./' + command + ' bridge aliases', {
+        silent:true
+    }).output;
     return JSON.parse(res);
 }
 
@@ -66,7 +137,7 @@ function find_paths(directory) {
         var static_path = apps[app_name];
         var dir_path = path.join(static_path, directory);
         if(fs.existsSync(dir_path)) {
-            var full_path = path.join(static_path, directory)
+            var full_path = path.join(static_path, directory);
             result.push(full_path);
         }
     });
@@ -84,8 +155,9 @@ function find_files(directory, extensions) {
         for(fileno in file_list) {
             var filename = file_list[fileno];
             var file_ext = path.extname(filename);
+            var name = path.parse(filename).name
             var first_symbol = filename.substr(0, 1)
-            if(extensions.indexOf(file_ext) != -1 & first_symbol != '_') {
+            if(extensions.indexOf(file_ext) != -1 & first_symbol != '_' & name != 'index') {
                 var full_path = path.join(path_item, filename)
                 result.push(full_path);
             }
@@ -122,24 +194,53 @@ gulp.task('styles', function() {
         s = s.pipe(watch(file_list));
     }
     return s.pipe(sass(sass_options))
-            .pipe(gulp.dest('./static/styles/'));
+            .pipe(gulp.dest(STATIC_PATH + '/styles/'))
+            .pipe(bust())
+            .pipe(gulp.dest(STATIC_PATH + '/'));
 })
 
-gulp.task('scripts', watchify(function(watchify) {
+gulp.task('vendors', function() {
+    if (package.bridge && package.bridge.vendors) {
+        b = browserify()
+
+        package.bridge.vendors.forEach(function (lib) {
+            b.require(lib)
+        })
+
+        return b.bundle()
+                .pipe(source('vendors.js'))
+                .pipe(gulp.dest(STATIC_PATH + '/scripts'))
+                .pipe(buffer())
+                .pipe(bust())
+                .pipe(gulp.dest(STATIC_PATH + '/'));
+    }
+})
+
+function get_aliasify_config() {
+    var res = {
+        aliases: {},
+        verbose: false
+    };
+    var app_list = get_django_apps();
+    for (app in app_list) {
+        res.aliases[app] = path.join(app_list[app], 'scripts')
+    }
+    return res
+}
+
+gulp.task('scripts', ['vendors'], watchify(function(watchify) {
     var w = watchify({
         watch: watching,
         setup: function(b) {
-            // bundle.transform(require('brfs'))
             b.transform('coffeeify');
             b.transform('browserify-eco');
+            b.transform(aliasify, get_aliasify_config())
             b.on('bundle', function() {
-                // libs.forEach function (lib) {
-                //     if(lib.expose) {
-                //         b.external(lib.require, expose: lib.expose);
-                //     } else {
-                //         b.external(lib.require);
-                //     }
-                // }
+                if (package.bridge && package.bridge.vendors) {
+                    package.bridge.vendors.forEach(function (lib) {
+                        b.external(lib);
+                    })
+                }
             });
         }
     })
@@ -150,20 +251,9 @@ gulp.task('scripts', watchify(function(watchify) {
                .pipe(buffer())
                .pipe(sourcemaps.init({loadMaps:true}))
                .pipe(sourcemaps.write('./'))
-               .pipe(gulp.dest('./static/scripts/'))
-               .pipe(bust({
-                    transform: function(data) {
-                        var result = {};
-                        for(item in data) {
-                            // TODO: may be config
-                            filename = item.replace('static/', '')
-                            // TODO: may be filter .map files
-                            result[filename] = data[item];
-                        }
-                        return result;
-                    }
-               }))
-               .pipe(gulp.dest('./static/scripts/'))
+               .pipe(gulp.dest(STATIC_PATH + '/scripts/'))
+               .pipe(bust())
+               .pipe(gulp.dest(STATIC_PATH + '/'))
 }))
 
 gulp.task('watch', ['enable-watch-mode', 'scripts', 'styles']);

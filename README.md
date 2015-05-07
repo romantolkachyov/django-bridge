@@ -19,11 +19,11 @@ that you using python virtualenv.
     pip install django-bridge
 
 After that you must add `django-bridge` into `INSTALLED_APPS` list in django
-settings. After that you may use command `bridge install` to install node and
+settings. After that you may use command `bridge init` to install node and
 related packages into your python virtualenv using `nodeenv`. It will not work
 outside virtualenv because perfoms global gulp install
 
-    python manage.py bridge install
+    python manage.py bridge init
 
 Manual
 ------
@@ -51,6 +51,9 @@ django app in `static/scripts` and `static/styles` respectevly.
 Script files must have '.js' or '.coffee' extensions and styles
 are '.css' or '.scss'.
 
+Endpoint ignored if filename started with `_` or equal to `index` (with any
+extension).
+
 You may import scripts and styles from any other installed django apps inside
 yours using django app name.
 
@@ -67,6 +70,47 @@ Configuration
 You can change package behaivor via `package.json` in your application.
 Available settings and their defaults listed below.
 
+All configuration options must be located in `package.json` under the 'bridge' key.
+
+Example:
+
+    ...
+    "bridge": {
+        "django_path": "./",
+        "static_path": "./static",
+        "editor": "subl %(file)s:%(line)d:%(column)d",
+        "vendors": ["backbone"]
+    },
+    ...
+
+django_path
+-----------
+
+`manage.py` script path. Relative to `package.json`.
+
+static_path
+-----------
+
+Where to put bundles. Also you must add this directory to `STATICFILES_DIRS`
+in django. It will have a highest priority over application files. Relative to
+`package.json` file.
+
+editor
+------
+
+Which command must be executed when user click on error notification.
+You may wish to use placeholders:
+
+* `%(file)s` — full file path
+* `%(line)d` — line of the file
+* `%(column)d` — error position in string
+
+By default it is a Sublime Text `subl` command as in example above.
+
+vendors
+-------
+
+List of npm packages which must be bundled in separate `vendors.js` bundle.
 
 Roadmap
 =======
@@ -76,12 +120,14 @@ Roadmap
 
 * JSX
 * less
-* open file at pos on notification click (seems like imposible)
 * sprites
+* live reload
+* bower?
 
 0.1
 ---
 
+* open file at pos on notification click
 * gulp-notify
 * gulp-buster
 * vendors bundle

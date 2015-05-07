@@ -8,6 +8,12 @@
   },
   "author": "",
   "license": "ISC",
+  "bridge": {
+    "django_path": "./",
+    "static_path": "./static",
+    "editor": "subl %(file)s:%(line)d:%(column)d",
+    "vendors": ["backbone"]
+  },
   "dependencies": {
     "browserify-eco": "^0.2.4",
     "coffeeify": "^1.0.0"

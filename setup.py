@@ -30,6 +30,7 @@ setup(
 
     # The project's main homepage.
     url='https://github.com/romantolkachyov/django-bridge',
+    download_url='https://github.com/romantolkachyov/django-bridge/tarball/0.1',
 
     # Author details
     author='Roman Tolkachyov',
@@ -58,18 +59,14 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
     ],
 
     # What does your project relate to?
-    keywords='django nodejs coffee browserify gulp',
+    keywords=['django', 'nodejs', 'coffee', 'browserify', 'gulp'],
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=['django-bridge'],
 
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's

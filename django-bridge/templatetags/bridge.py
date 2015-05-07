@@ -2,6 +2,7 @@ import json
 import os
 from django import template
 from django.conf import settings
+from django.templatetags.static import static
 
 register = template.Library()
 
@@ -19,7 +20,6 @@ def bridge(filename):
     # TODO: may be store it somewhere to not load file every time
     busters_json = json.loads(fp.read())
     fp.close()
-    file_hash = busters_json.get(filename)
-    STATIC_URL = settings.STATIC_URL
-    path = os.path.join(STATIC_URL, filename)
+    file_hash = busters_json.get("static/%s" % filename)
+    path = static(filename)
     return "%s?%s" % (path, file_hash) if file_hash is not None else path

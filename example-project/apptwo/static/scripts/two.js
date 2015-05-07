@@ -1,3 +1,3 @@
-// var lib1 = require('appone/lib/lib1');
+var lib1 = require('appone');
 
 lib1();
