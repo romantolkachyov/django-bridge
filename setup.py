@@ -66,7 +66,8 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=['django_bridge'],
+    packages=['django_bridge', 'django_bridge.templatetags',
+              'django_bridge.management', 'django_bridge.management.commands'],
 
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
