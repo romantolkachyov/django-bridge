@@ -15,7 +15,9 @@ def bridge(filename):
     """
     if not hasattr(settings, 'BASE_DIR'):
         raise Exception("You must provide BASE_DIR in settings for bridge")
-    buster_file = os.path.join(settings.BASE_DIR, 'static', 'busters.json')
+    file_path = getattr(settings, 'BUSTERS_FILE', os.path.join('static',
+                                                               'busters.json'))
+    buster_file = os.path.join(settings.BASE_DIR, file_path)
     fp = file(buster_file, 'r')
     # TODO: may be store it somewhere to not load file every time
     busters_json = json.loads(fp.read())
