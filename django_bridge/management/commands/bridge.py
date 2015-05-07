@@ -33,6 +33,12 @@ class Command(BaseCommand):
             subprocess.call(['pip', 'install', 'nodeenv'])
             subprocess.call(['nodeenv', '-p', '--prebuilt', '-n', '0.11.16'])
             subprocess.call(['npm', 'init'])
+            subprocess.call(['npm', 'install', '-g', '--save-dev', 'gulp'])
+            subprocess.call(['npm', 'install', '--save-dev', 'django-bridge'])
+
+            # TODO: check installed apps
+            # TODO: check static dir, find manage.py etc update package.json
+            # TODO: generate gulpfile.js
         else:
             # unrecognized command
             raise CommandError("Unrecognized action `%s` for bridge command"

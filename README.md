@@ -19,14 +19,19 @@ that you using python virtualenv.
     pip install django-bridge
 
 After that you must add `django_bridge` into `INSTALLED_APPS` list in django
-settings. After that you may use command `bridge init` to install node and
+settings. Also you must have `BASE_DIR` setting (added by default in latest
+django) and add static dir where `django-bridge` will put bundles into
+`STATICFILES_DIRS` setting (see configuration section).
+
+After that you may use command `bridge init` to install node and
 related packages into your python virtualenv using `nodeenv`. It will not work
-outside virtualenv because perfoms global gulp install
+outside virtualenv because perfoms global gulp install (in this case refer to
+manual install section)
 
     python manage.py bridge init
 
-Manual
-------
+Manual install
+--------------
 
 You may wish to install nodejs manually.
 
@@ -41,6 +46,10 @@ allows you to install node packages into your python virtualenv.
 Also you must install gulp globally:
 
     npm install -g gulp
+
+You must create `gulpfile.js` then with following content:
+
+    require('django-bridge');
 
 Usage
 =====
