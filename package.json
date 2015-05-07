@@ -1,6 +1,6 @@
 {
   "name": "django-bridge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Integrates nodejs into python/django framework",
   "main": "index.js",
   "files": [
@@ -31,9 +31,6 @@
   "dependencies": {
     "aliasify": "^1.7.2",
     "browserify": "^9.0.8",
-    "browserify-eco": "^0.2.4",
-    "coffeeify": "^1.0.0",
-    "gulp": "^3.8.11",
     "gulp-buster": "^1.0.0",
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.0.0",
@@ -49,6 +46,12 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.1.1"
+  },
+  "peerDependencies": {
+    "gulp": "3.x",
+    "coffee-script": "^1.9.2",
+    "coffeeify": "1.1.x",
+    "browserify-eco": "0.2.x"
   },
   "browserify": {
     "transform": [
