@@ -126,7 +126,10 @@ function get_django_apps() {
     var res = shelljs.exec('./' + command + ' bridge aliases', {
         silent:true
     }).output;
-    return JSON.parse(res);
+
+    start_pos = res.search('----\n')
+
+    return JSON.parse(res.substr(start_pos + 5));
 }
 
 function find_paths(directory) {

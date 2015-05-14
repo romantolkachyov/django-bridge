@@ -25,6 +25,7 @@ class Command(BaseCommand):
                     scripts_path = os.path.join(module_path, 'static')
                     if os.path.exists(scripts_path):
                         result[app] = scripts_path
+                self.stdout.write('----\n')
                 self.stdout.write(json.dumps(result))
             else:
                 raise CommandError("Not in production enviroment. "
