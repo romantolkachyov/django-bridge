@@ -39,12 +39,16 @@ var plumber = require('gulp-plumber');
 
 var aliasify = require('aliasify');
 
+var livereload = require('gulp-livereload');
+
+var autoprefixer = require('gulp-autoprefixer');
+
 
 var browserify_error_re = /(\/.+\.js).+\((\d+)\:?(\d+)\)/i;
 var syntax_error_re = /(\/.+\.js)\:(\d+)/i;
 
 
-var exec_string = "subl %(file)s:%(line)d:%(column)";
+var exec_string = "subl %(file)s:%(line)d:%(column)d";
 var STATIC_PATH = "./static"
 var DJANGO_PATH = "./"
 
@@ -174,6 +178,18 @@ function find_styles() {
     return find_files("styles", ['.scss'])
 }
 
+function find_styles_watch() {
+    // return a list of globs to watch changes
+    var result = [];
+    var path_list = find_paths('styles');
+    for (i in path_list) {
+        var item = path_list[i];
+        result.push(path.join(item, '**', '*.scss'));
+        result.push(path.join(item, '*.scss'));
+    }
+    return result
+}
+
 function find_scripts() {
     // return file list for browserify end points
     return find_files("scripts", ['.js', '.coffee']);
@@ -193,13 +209,21 @@ gulp.task('styles', function() {
     }
 
     s = gulp.src(file_list)
-    if (watching) {
-        s = s.pipe(watch(file_list));
-    }
+
     return s.pipe(sass(sass_options))
+            .pipe(autoprefixer({
+                browsers: ['last 2 versions'],
+                cascade: false
+            }))
             .pipe(gulp.dest(STATIC_PATH + '/styles/'))
             .pipe(bust())
-            .pipe(gulp.dest(STATIC_PATH + '/'));
+            .pipe(gulp.dest(STATIC_PATH + '/'))
+            .pipe(livereload());
+})
+
+gulp.task('styles:watch', function () {
+    livereload.listen();
+    gulp.watch(find_styles_watch(), ['styles']);
 })
 
 gulp.task('vendors', function() {
@@ -252,6 +276,9 @@ gulp.task('scripts', ['vendors'], watchify(function(watchify) {
                .pipe(w)
                .on('error', handle_error)
                .pipe(buffer())
+               .pipe(rename({
+                    extname: '.js'
+               }))
                .pipe(sourcemaps.init({loadMaps:true}))
                .pipe(sourcemaps.write('./'))
                .pipe(gulp.dest(STATIC_PATH + '/scripts/'))
@@ -259,7 +286,7 @@ gulp.task('scripts', ['vendors'], watchify(function(watchify) {
                .pipe(gulp.dest(STATIC_PATH + '/'))
 }))
 
-gulp.task('watch', ['enable-watch-mode', 'scripts', 'styles']);
+gulp.task('watch', ['enable-watch-mode', 'scripts', 'styles:watch']);
 
 gulp.task('build', ['scripts', 'styles'])
 
