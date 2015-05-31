@@ -221,7 +221,7 @@ gulp.task('styles', function() {
             .pipe(livereload());
 })
 
-gulp.task('styles:watch', function () {
+gulp.task('styles:watch', ['styles'], function () {
     livereload.listen();
     gulp.watch(find_styles_watch(), ['styles']);
 })

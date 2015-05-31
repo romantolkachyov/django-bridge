@@ -31,6 +31,7 @@
   "dependencies": {
     "aliasify": "^1.7.2",
     "browserify": "^9.0.8",
+    "graceful-fs": "^3.0.6",
     "gulp-autoprefixer": "^2.2.0",
     "gulp-buster": "^1.0.0",
     "gulp-livereload": "^3.8.0",
