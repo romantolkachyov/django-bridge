@@ -130,8 +130,13 @@ Roadmap
 * JSX
 * less
 * sprites
-* live reload
 * bower?
+
+0.2
+---
+
+* static compression
+* live reload
 
 0.1
 ---

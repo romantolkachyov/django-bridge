@@ -1,6 +1,6 @@
 {
   "name": "django-bridge",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Integrates nodejs into python/django framework",
   "main": "index.js",
   "files": [
